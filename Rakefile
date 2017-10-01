@@ -1,21 +1,6 @@
-begin
-	require 'rubygems'
-	require 'rake'
-	require 'rspec/core/rake_task'
+require "bundler/gem_tasks"
+require "rspec/core/rake_task"
 
-	task :default => [:spec]
+RSpec::Core::RakeTask.new(:spec)
 
-	desc 'Run the code in specs'
-	RSpec::Core::RakeTask.new(:spec) do |t|
-		t.pattern = "spec/**/*_spec.rb"
-	end
-rescue LoadError
-end
-
-# Local Variables:
-# mode: ruby
-# indent-tabs-mode: t
-# tab-width: 3
-# ruby-indent-level: 3
-# End:
-# vim: ts=3
+task :default => :spec

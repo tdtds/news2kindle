@@ -1,6 +1,10 @@
 .bundle
 .env
-vendor
+/vendor/bundle
 nikkei-paid
 nikkei-free
 internet-watch
+/.bundle/
+/pkg/
+/spec/reports/
+/tmp/
