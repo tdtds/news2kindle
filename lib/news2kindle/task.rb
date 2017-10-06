@@ -1,18 +1,16 @@
-# -*- coding: utf-8; -*-
-#
 # task controller
 #
-# Copyright (C) 2012 by TADA Tadashi <t@tdtds.jp>
+# Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
 # Distributed under GPL.
 #
 require 'kindlegen'
 require 'mail'
 
-module Kindlizer::Backend
+module News2Kindle
 	class Task
 		def initialize( name )
-			require "kindlizer/generator/#{name}"
-			@generator = Kindlizer::Generator.const_get( name.split(/-/).map{|a| a.capitalize}.join )
+			require "news2kindle/generator/#{name}"
+			@generator = News2Kindle::Generator.const_get( name.split(/-/).map{|a| a.capitalize}.join )
 		end
 
 		def run( to, from, opts )

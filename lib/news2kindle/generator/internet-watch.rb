@@ -1,6 +1,4 @@
-# -*- coding: utf-8; -*-
-#
-# scraping internet.watch.impress.co.jp for Kindlizer
+# scraping internet.watch.impress.co.jp for News2Kindle
 #
 
 require 'nokogiri'
@@ -11,7 +9,7 @@ require 'tmpdir'
 require 'pathname'
 require 'fileutils'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class InternetWatch
 			TOP = 'http://internet.watch.impress.co.jp'
@@ -40,7 +38,7 @@ module Kindlizer
 					uri = URI( item.attr( 'rdf:about' ).to_s )
 					next unless /internet\.watch\.impress\.co\.jp/ =~ uri.host
 					uri.query = nil # remove query of 'ref=rss'
-					next if Kindlizer::Backend::DupChecker.dup?(uri)
+					next if News2Kindle::DupChecker.dup?(uri)
 				
 					title = (item / 'title').text
 					date = item.elements.map{|e| e.text if e.name == 'date'}.join

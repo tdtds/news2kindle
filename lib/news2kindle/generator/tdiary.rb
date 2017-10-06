@@ -1,13 +1,11 @@
-# -*- coding: utf-8; -*-
-#
-# scraping tDiary's N-Year diary for Kindlizer
+# scraping tDiary's N-Year diary for News2Kindle
 #
 
 require 'nokogiri'
 require 'open-uri'
 require 'uri'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class Tdiary
 			def initialize( tmpdir )

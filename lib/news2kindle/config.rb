@@ -1,15 +1,13 @@
-# -*- coding: utf-8; -*-
-#
 # configuration management
 #
-# Copyright (C) 2012 by TADA Tadashi <t@tdtds.jp>
+# Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
 # Distributed under GPL.
 #
 require 'yaml'
 require 'open-uri'
 require 'pathname'
 
-module Kindlizer::Backend
+module News2Kindle
 	class ConfigError < StandardError; end
 
 	class Config

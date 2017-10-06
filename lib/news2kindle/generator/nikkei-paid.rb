@@ -1,6 +1,4 @@
-# -*- coding: utf-8; -*-
-#
-# scraping nikkei.com (for paid user) for Kindlizer
+# scraping nikkei.com (for paid user) for News2Kindle
 #
 
 require 'mechanize'
@@ -9,7 +7,7 @@ require 'open-uri'
 require 'tmpdir'
 require 'pathname'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class NikkeiPaid
 			class IllegalPage < StandardError; end
@@ -59,7 +57,7 @@ module Kindlizer
 				%w(first second third fourth).each do |category|
 					(agent.page / "div.nx-top_news_#{category} h3 a").each do |a|
 						uri = a.attr('href')
-						next if Kindlizer::Backend::DupChecker.dup?(uri)
+						next if News2Kindle::DupChecker.dup?(uri)
 						toc_top << [canonical( a.text.strip ), uri]
 					end
 				end
@@ -75,7 +73,7 @@ module Kindlizer
 						toc_cat << cat.text
 						(genre / 'li a').each do |article|
 							uri = article.attr('href')
-							next if Kindlizer::Backend::DupChecker.dup?(uri)
+							next if News2Kindle::DupChecker.dup?(uri)
 							toc_cat << [canonical( article.text ), uri]
 						end
 					end

@@ -1,15 +1,13 @@
-# -*- coding: utf-8; -*-
-#
 # uri duplication checker
 #
-# Copyright (C) 2014 by TADA Tadashi <t@tdtds.jp>
+# Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
 # Distributed under GPL.
 #
 require 'mongoid'
 
 module Kindlizer; end
 
-module Kindlizer::Backend
+module News2Kindle
 	class DupChecker
 		Mongo::Logger.level = Logger::WARN
 		@@mongoid_conf = nil
