@@ -1,5 +1,7 @@
 .bundle
 .env
+.rspec_status
+.ruby-version
 /vendor/bundle
 nikkei-paid
 nikkei-free
