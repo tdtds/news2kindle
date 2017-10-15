@@ -1,3 +1,9 @@
 #!/usr/bin/env ruby
+#
+# news2kindle: scraping news sites and generate kindle document
+#
+# Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
+# Distributed under GPL
+#
 
 require "news2kindle"
