@@ -6,4 +6,64 @@
 # Distributed under GPL
 #
 
-require "news2kindle"
+require 'news2kindle'
+require 'optparse'
+require 'open-uri'
+require 'yaml'
+
+module News2Kindle
+	class CLI
+		def run
+			config, args = parse_options
+			usage config.to_s
+		end
+
+	private
+		def parse_options(argv = ARGV)
+			op = OptionParser.new
+
+			self.class.module_eval do
+				define_method(:usage) do |msg = nil|
+					puts op.to_s
+					puts "error: #{msg}" if msg
+					exit 1
+				end
+			end
+
+			opts = {}
+
+			op.on('-C', '--config VALUE', "configuration file") do |v|
+				usage("#{v} is not existent") unless Pathname(v).expand_path.exist?
+				opts[:config] = v
+			end
+			op.on('-s', '--sender VALUE', "sender e-mail address") do |v|
+				opts[:sender] = v
+			end
+
+			op.banner += ' TASK1 [TASK2...]'
+			begin
+				args = op.parse(argv)
+			rescue OptionParser::InvalidOption => e
+				usage e.message
+			end
+
+			begin
+				config_files = [opts[:config], './news2kindle.yaml', '~/.news2kindle']
+				conf = YAML::load_file(config_files.find {|c|
+					Pathname(c).expand_path.exist? rescue false
+				}).merge(opts)
+			rescue TypeError
+				usage 'needs configuration file ./news2kindle.yaml or ~/.news2kindle'
+			rescue 
+				usage "unable read configuration file (#{config_file})"
+			end
+
+			if args.size < 1
+				usage 'needs some tasks'
+			end
+			[conf, args]
+		end
+	end
+end
+
+News2Kindle::CLI.new.run
