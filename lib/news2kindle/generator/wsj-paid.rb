@@ -10,7 +10,7 @@ require 'tmpdir'
 require 'pathname'
 require 'json'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class WsjPaid
 			TOP = 'http://jp.wsj.com'
