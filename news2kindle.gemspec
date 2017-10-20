@@ -5,7 +5,7 @@ require "news2kindle/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "news2kindle"
-  spec.version       = News2kindle::VERSION
+  spec.version       = News2Kindle::VERSION
   spec.authors       = ["TADA Tadashi"]
   spec.email         = ["t@tdtds.jp"]
 

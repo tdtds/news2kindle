@@ -19,10 +19,10 @@ module News2Kindle
 					Kindlegen.run( opf, '-o', 'kindlizer.mobi', '-locale', 'ja' )
 					mobi = Pathname( opf ).dirname + 'kindlizer.mobi'
 					if mobi.file?
-						$logger.info "generated #{mobi} successfully."
+						News2Kindle.logger.info "generated #{mobi} successfully."
 						deliver( [to].flatten, from, mobi )
 					else
-						$logger.error 'failed mobi generation.'
+						News2Kindle.logger.error 'failed mobi generation.'
 					end
 				end
 			end
@@ -47,7 +47,7 @@ module News2Kindle
 					:content => open(mobi, &:read)
 				}
 			end
-			$logger.info "sent mails successfully."
+			News2Kindle.logger.info "sent mails successfully."
 		end
 
 		def deliver_via_dropbox(to_address, mobi)
@@ -66,12 +66,12 @@ module News2Kindle
 						file = Pathname(to_path) + "#{mobi.basename('.mobi').to_s}#{Time::now.to_i}.mobi"
 						client.put_file(file.to_s, f)
 					end
-					$logger.info "saved to #{address} successfully."
+					News2Kindle.logger.info "saved to #{address} successfully."
 				end
 			rescue
-				$logger.error "failed while saving to dropbox."
-				$logger.error $!
-				$@.each{|l| $logger.error l}
+				News2Kindle.logger.error "failed while saving to dropbox."
+				News2Kindle.logger.error $!
+				$@.each{|l| News2Kindle.logger.error l}
 			end
 		end
 	end

@@ -12,10 +12,26 @@ require 'open-uri'
 require 'yaml'
 
 module News2Kindle
+
 	class CLI
 		def run
-			config, args = parse_options
-			usage config.to_s
+			conf, tasks = parse_options
+			News2Kindle.logger.info(conf)
+
+			tasks.each do |name|
+				task = conf[:tasks][name]
+				usage("task '#{name}' not found") unless task
+
+				task[:media].each do |media|
+					begin
+						puts "#{media}..."
+						Task::new(media).run(task[:receiver], conf[:sender], conf)
+					rescue
+						News2Kindle.logger.fatal($!)
+						raise
+					end
+				end
+			end
 		end
 
 	private
@@ -30,7 +46,9 @@ module News2Kindle
 				end
 			end
 
-			opts = {}
+			opts = {
+				now: Time::now
+			}
 
 			op.on('-C', '--config VALUE', "configuration file") do |v|
 				usage("#{v} is not existent") unless Pathname(v).expand_path.exist?

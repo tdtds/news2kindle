@@ -63,7 +63,7 @@ module Kindlizer
 							sleep 1
 						end
 					rescue
-						$stderr.puts "cannot get #{uri}."
+						News2Kindle.logger.error "cannot get #{uri}."
 						raise
 					end
 

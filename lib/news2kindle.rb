@@ -1,5 +1,12 @@
-require "news2kindle/version"
+require 'news2kindle/version'
+require 'news2kindle/task'
+require 'news2kindle/dup_checker'
+require 'logger'
 
-module News2kindle
-  # Your code goes here...
+module News2Kindle
+	@logger = Logger.new(STDERR)
+	@logger.level = Logger::INFO
+	@logger.formatter = proc{|severity, _, _, msg| "#{severity}: #{msg}\n"}
+	def self.logger; @logger; end
+	def self.logger=(logger); @logger = logger; end
 end

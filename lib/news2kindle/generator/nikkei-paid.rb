@@ -128,8 +128,8 @@ module News2Kindle
 					if count >= times
 						raise
 					else
-						$stderr.puts $!
-						$stderr.puts "#{count} retry."
+						News2Kindle.logger.error $!
+						News2Kindle.logger.info "#{count} retry."
 						retry
 					end
 				end
@@ -164,7 +164,7 @@ module News2Kindle
 							sleep 1
 						end
 					rescue
-						$stderr.puts "cannot get #{TOP}#{uri}."
+						News2Kindle.logger.error "cannot get #{TOP}#{uri}."
 						raise
 					end
 					open( "#{@src_dir}/#{aid}#{sub}.html", 'w:utf-8' ) do |f|
@@ -201,8 +201,8 @@ module News2Kindle
 									result << %Q|\t\t<p>[#{e.text}]</p>| unless e.text.strip.empty?
 									result << %Q|\t</div>|
 								rescue
-									p $!
-									$stderr.puts "FAIL TO DOWNLOAD IMAGE: #{image_url}"
+									News2Kindle.logger.debug $!
+									News2Kindle.logger.warn "FAIL TO DOWNLOAD IMAGE: #{image_url}"
 								end
 							end
 						end
@@ -231,8 +231,8 @@ module News2Kindle
 
 					%Q|\t\t<li><a href="#{aid}.html">#{item}</a></li>|
 				rescue NoMethodError
-					$stderr.puts "page parsing faild. #{aid}"
-					$stderr.puts $!
+					News2Kindle.logger.debug $!
+					News2Kindle.logger.error "page parsing faild. #{aid}"
 					File.delete out_file
 					raise IllegalPage.new
 				end

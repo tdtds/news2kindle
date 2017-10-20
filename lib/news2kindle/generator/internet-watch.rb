@@ -68,15 +68,15 @@ module News2Kindle
 									open( "#{@dst_dir}/#{cache}", 'w' ){|f| f.write img_file}
 									img.set_attribute( 'src', cache )
 								rescue OpenURI::HTTPError
-									$stderr.puts "skipped an image: #{TOP}#{org}"
+									News2Kindle.logger.error "skipped an image: #{TOP}#{org}"
 								end
 							end
 							f.puts contents.inner_html
 							f.puts html_footer
 						end
 					rescue
-						$stderr.puts "#{$!.class}: #$!"
-						$stderr.puts "skipped an article: #{item.uri}"
+						News2Kindle.logger.warn "#{$!.class}: #$!"
+						News2Kindle.logger.warn "skipped an article: #{item.uri}"
 					end
 				end
 				
@@ -185,8 +185,8 @@ module News2Kindle
 					if count >= times
 						raise
 					else
-						$stderr.puts $!
-						$stderr.puts "#{count} retry."
+						News2Kindle.logger.error $!
+						News2Kindle.logger.info "#{count} retry."
 						sleep 1
 						retry
 					end

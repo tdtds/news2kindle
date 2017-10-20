@@ -66,7 +66,7 @@ config.yamlというファイルがあるので、適当な名前でコピーし
 
 ## ジェネレータの作り方
 あとで書く。
-# News2kindle
+# News2Kindle
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/news2kindle`. To experiment with that code, run `bin/console` for an interactive prompt.
 

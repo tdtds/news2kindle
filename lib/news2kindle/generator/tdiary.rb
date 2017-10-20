@@ -26,7 +26,7 @@ module News2Kindle
 						now_str = now.strftime( '%m-%d' )
 					end
 				rescue => e
-					$stderr.puts "failed by retry over: #{e.class}: #{e}"
+					News2Kindle.logger.info "failed by retry over: #{e.class}: #{e}"
 				end
 
 				#
@@ -107,8 +107,8 @@ module News2Kindle
 					if count >= times
 						raise
 					else
-						$stderr.puts $!
-						$stderr.puts "#{count} retry."
+						News2Kindle.logger.debug $!
+						News2Kindle.logger.info "#{count} retry."
 						sleep 1
 						retry
 					end
@@ -126,7 +126,7 @@ module News2Kindle
 						f.write open(uri, &:read)
 					end
 				rescue OpenURI::HTTPError, RuntimeError, Errno::ENOENT
-					$stderr.puts "#$!: #{uri}"
+					News2Kindle.logger.warn "#$!: #{uri}"
 				end
 				return file_name
 			end
