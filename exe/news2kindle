@@ -16,7 +16,7 @@ module News2Kindle
 	class CLI
 		def run
 			conf, tasks = parse_options
-			News2Kindle.logger.info(conf)
+			News2Kindle.logger.level = Logger::DEBUG if conf[:verbose]
 
 			tasks.each do |name|
 				task = conf[:tasks][name]
@@ -47,7 +47,8 @@ module News2Kindle
 			end
 
 			opts = {
-				now: Time::now
+				now: Time::now,
+				verbose: false
 			}
 
 			op.on('-C', '--config VALUE', "configuration file") do |v|
@@ -56,6 +57,9 @@ module News2Kindle
 			end
 			op.on('-s', '--sender VALUE', "sender e-mail address") do |v|
 				opts[:sender] = v
+			end
+			op.on('-V', '--verbose', "print verbose messages") do |v|
+				opts[:verbose] = true
 			end
 
 			op.banner += ' TASK1 [TASK2...]'
