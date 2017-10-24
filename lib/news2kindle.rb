@@ -5,7 +5,7 @@ require 'logger'
 
 module News2Kindle
 	@logger = Logger.new(STDERR)
-	@logger.level = Logger::INFO
+	@logger.level = Logger::ERROR
 	@logger.formatter = proc{|severity, _, _, msg| "#{severity}: #{msg}\n"}
 	def self.logger; @logger; end
 	def self.logger=(logger); @logger = logger; end
