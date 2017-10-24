@@ -54,24 +54,45 @@ module News2Kindle
 			return if to_address.empty?
 
 			begin
-				require 'dropbox_sdk'
+				require 'pit'
+				require 'dropbox_api'
+				auth = Pit::get('news2kindle')
+				unless auth[:dropbox_token]
+					print "Enter dropbox app key: "
+					api_key = $stdin.gets.chomp
+
+					print "Enter dropbox app secret: "
+					api_secret = $stdin.gets.chomp
+
+					authenticator = DropboxApi::Authenticator.new(api_key, api_secret)
+					puts "\nGo to this url and click 'Authorize' to get the token:"
+					puts authenticator.authorize_url
+
+					print "Enter the token: "
+					code = $stdin.gets.chomp
+
+					auth[:dropbox_token] = authenticator.get_token(code).token
+					Pit::set('news2kindle', data: auth)
+				end
+				client = DropboxApi::Client.new(auth[:dropbox_token])
 	
-				session = DropboxSession.new(ENV['DROPBOX_APP_KEY'], ENV['DROPBOX_APP_SECRET'])
-				session.set_request_token(ENV['DROPBOX_REQUEST_TOKEN_KEY'], ENV['DROPBOX_REQUEST_TOKEN_SECRET'])
-				session.set_access_token(ENV['DROPBOX_ACCESS_TOKEN_KEY'], ENV['DROPBOX_ACCESS_TOKEN_SECRET'])
-				client = DropboxClient.new(session, :dropbox)
 				to_address.each do |address|
 					to_path = address.sub(/^dropbox:/, '')
 					open(mobi) do |f|
 						file = Pathname(to_path) + "#{mobi.basename('.mobi').to_s}#{Time::now.to_i}.mobi"
-						client.put_file(file.to_s, f)
+						info = DropboxApi::Metadata::CommitInfo.new('path'=>file, 'mode'=>:add)
+						cursor = client.upload_session_start('')
+						while data = f.read(10_000_000)
+							client.upload_session_append_v2(cursor, data)
+						end
+						client.upload_session_finish(cursor, info)
 					end
 					News2Kindle.logger.info "saved to #{address} successfully."
 				end
 			rescue
 				News2Kindle.logger.error "failed while saving to dropbox."
-				News2Kindle.logger.error $!
-				$@.each{|l| News2Kindle.logger.error l}
+				News2Kindle.logger.debug $!
+				$@.each{|l| News2Kindle.logger.debug l}
 			end
 		end
 	end
