@@ -24,7 +24,7 @@ module News2Kindle
 
 				task[:media].each do |media|
 					begin
-						puts "#{media}..."
+						News2Kindle.logger.info "starting #{media}..."
 						Task::new(media).run(task[:receiver], conf[:sender], conf)
 					rescue
 						News2Kindle.logger.fatal($!)
