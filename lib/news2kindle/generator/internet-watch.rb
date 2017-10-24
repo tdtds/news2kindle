@@ -12,7 +12,7 @@ require 'fileutils'
 module News2Kindle
 	module Generator
 		class InternetWatch
-			TOP = 'http://internet.watch.impress.co.jp'
+			TOP = 'https://internet.watch.impress.co.jp'
 			
 			def initialize( tmpdir )
 				@current_dir = tmpdir
@@ -30,9 +30,9 @@ module News2Kindle
 				now = opts[:now]
 				items = []
 				
-				rdf_file = "#{TOP}/cda/rss/internet.rdf"
+				rdf_file = "http://rss.rssad.jp/rss/internetwatch/internet.rdf"
 				rdf = retry_loop( 5 ) do
-					Nokogiri( open( rdf_file, 'r:utf-8', &:read ) )
+					Nokogiri(open(rdf_file, 'r:utf-8', &:read))
 				end
 				(rdf / 'item' ).each do |item|
 					uri = URI( item.attr( 'rdf:about' ).to_s )
