@@ -3,8 +3,10 @@
 # Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
 # Distributed under GPL.
 #
+require 'pit'
 require 'kindlegen'
 require 'mail'
+require 'dropbox_api'
 
 module News2Kindle
 	class Task
@@ -20,7 +22,7 @@ module News2Kindle
 					mobi = Pathname( opf ).dirname + 'kindlizer.mobi'
 					if mobi.file?
 						News2Kindle.logger.info "generated #{mobi} successfully."
-						deliver( [to].flatten, from, mobi )
+						deliver([to].flatten, from, mobi, opts)
 					else
 						News2Kindle.logger.error 'failed mobi generation.'
 					end
@@ -29,14 +31,25 @@ module News2Kindle
 		end
 
 	private
-		def deliver( to_address, from_address, mobi )
+		def deliver(to_address, from_address, mobi, opts)
 			to_dropbox = to_address.map{|a| /^dropbox:/ =~ a ? a : nil}.compact
 			deliver_via_dropbox(to_dropbox, mobi)
-			deliver_via_mail(to_address - to_dropbox, from_address, mobi)
+			deliver_via_mail(to_address - to_dropbox, from_address, mobi, opts)
 		end
 
-		def deliver_via_mail(to_address, from_address, mobi)
+		def deliver_via_mail(to_address, from_address, mobi, opts)
 			return if to_address.empty?
+
+			settings = opts[:email]
+			if settings[:user_name] or settings[:password]
+				account = Pit::get('news2kindle', require: {
+					mail_user_name: 'your e-mail id',
+					mail_password: 'your e-mail password'
+				})
+				settings[:user_name] = account[:mail_user_name]
+				settings[:password] = account[:mail_password]
+			end
+			Mail.defaults{delivery_method :smtp, settings}
 			Mail.deliver do
 				from from_address
 				to  to_address
@@ -54,8 +67,6 @@ module News2Kindle
 			return if to_address.empty?
 
 			begin
-				require 'pit'
-				require 'dropbox_api'
 				auth = Pit::get('news2kindle')
 				unless auth[:dropbox_token]
 					print "Enter dropbox app key: "

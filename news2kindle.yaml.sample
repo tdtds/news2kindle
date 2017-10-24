@@ -1,5 +1,11 @@
 ---
 :sender: hoge@example.com
+:email:
+  :address: smtp.sendgrid.net
+  :port: 587
+  :user_name: yes
+  :password: yes
+  :authentication: :plain
 :tasks:
   newspaper:
     :media:
