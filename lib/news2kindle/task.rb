@@ -66,7 +66,7 @@ module News2Kindle
 			Mail.deliver do
 				from from_address
 				to  to_address
-				subject 'sent by kindlizer'
+				subject 'sent by news2kindle'
 				body 'dummy text'
 				attachments[mobi.basename.to_s] = {
 					:mime_type => 'application/octet-stream',

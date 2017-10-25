@@ -1,4 +1,4 @@
-# scraping nikkei.com (for free user) for Kindlizer
+# scraping nikkei.com (for free user) for News2Kindle
 #
 
 require 'nokogiri'
