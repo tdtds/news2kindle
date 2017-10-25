@@ -15,7 +15,7 @@ module News2Kindle
 
 			def generate(opts)
 				now = opts[:now]
-				@top = opts['tdiary_top'] || ENV['TDIARY_TOP']
+				@top = opts[:tdiary_top] || ENV['TDIARY_TOP']
 
 				html = title = author = now_str = nil
 				begin
