@@ -24,8 +24,9 @@ module News2Kindle
 
 				task[:media].each do |media|
 					begin
+						opts = {now: Time.now}.merge(task[:option] || {})
 						News2Kindle.logger.info "starting #{media}..."
-						Task::new(media).run(task[:receiver], conf[:sender], conf)
+						Task::new(media).run(task[:receiver], conf[:sender], opts)
 					rescue
 						News2Kindle.logger.fatal($!)
 						raise
@@ -47,7 +48,6 @@ module News2Kindle
 			end
 
 			opts = {
-				now: Time::now,
 				verbose: false
 			}
 
