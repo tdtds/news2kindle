@@ -93,22 +93,12 @@ module News2Kindle
 		private
 
 			def auth
-				id = ENV['NIKKEI_ID']
-				pw = ENV['NIKKEI_PW']
-				if !id || !pw
-					begin
-						require 'pit'
-						login = Pit::get( 'nikkei', :require => {
-							'user' => 'your ID of Nikkei.',
-							'pass' => 'your Password of Nikkei.',
-						} )
-						id = login['user']
-						pw = login['pass']
-					rescue LoadError # no pit library, using environment variables
-						id, pw = nil, nil
-					end
-				end
-				return id, pw
+				require 'pit'
+				login = Pit::get('news2kindle', require: {
+					nikkei_user: 'your ID of Nikkei.',
+					nikkei_pass: 'your Password of Nikkei.',
+				})
+				return login[:nikkei_user], login[:nikkei_pass]
 			end
 
 			def basename
