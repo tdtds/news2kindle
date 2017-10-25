@@ -21,16 +21,18 @@ end
 
 module News2Kindle
 	class Task
-		def initialize( name )
-			require "news2kindle/generator/#{name}"
-			@generator = News2Kindle::Generator.const_get( name.split(/-/).map{|a| a.capitalize}.join )
+		def initialize(name)
+			@name = name
+			require "news2kindle/generator/#{@name}"
+			@generator = News2Kindle::Generator.const_get(@name.split(/-/).map{|a|a.capitalize}.join)
 		end
 
-		def run( to, from, opts )
+		def run(to, from, opts)
 			Dir.mktmpdir do |dir|
-				@generator::new( dir ).generate( opts ) do |opf|
-					Kindlegen.run( opf, '-o', 'kindlizer.mobi', '-locale', 'ja' )
-					mobi = Pathname( opf ).dirname + 'kindlizer.mobi'
+				@generator::new(dir).generate(opts) do |opf|
+					file = "#{@name}.#{Time.now.strftime("%Y%m%d%H%M%S%2N")}.mobi"
+					Kindlegen.run(opf, '-o', file, '-locale', 'ja')
+					mobi = Pathname(opf).dirname + file
 					if mobi.file?
 						News2Kindle.logger.info "generated #{mobi} successfully."
 						deliver([to].flatten, from, mobi, opts)
@@ -98,12 +100,11 @@ module News2Kindle
 				end
 				client = DropboxApi::Client.new(auth[:dropbox_token])
 				to_address.each do |address|
-					to_path = address.sub(/^dropbox:/, '')
+					file = Pathname(address.sub(/^dropbox:/, '')) + mobi.basename
 					open(mobi) do |f|
-						file = Pathname(to_path) + "#{mobi.basename('.mobi').to_s}#{Time::now.to_i}.mobi"
 						client.chunk_upload(file){f.read(10_000_000)}
 					end
-					News2Kindle.logger.info "saved to #{address} successfully."
+					News2Kindle.logger.info "saved to #{file} successfully."
 				end
 			rescue
 				News2Kindle.logger.error "failed while saving to dropbox."
