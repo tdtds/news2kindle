@@ -6,6 +6,7 @@
   :user_name: yes
   :password: yes
   :authentication: :plain
+:mongodb_uri: mongodb://localhost:27017/news2kindle
 :tasks:
   newspaper:
     :media:

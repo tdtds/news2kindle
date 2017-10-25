@@ -5,8 +5,6 @@
 #
 require 'mongoid'
 
-module Kindlizer; end
-
 module News2Kindle
 	class DupChecker
 		Mongo::Logger.level = Logger::WARN

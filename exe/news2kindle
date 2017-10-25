@@ -18,6 +18,10 @@ module News2Kindle
 			conf, tasks = parse_options
 			News2Kindle.logger.level = Logger::DEBUG if conf[:verbose]
 
+			if conf[:mongodb_uri]
+				DupChecker.setup({clients:{default:{uri:conf[:mongodb_uri]}}})
+			end
+
 			tasks.each do |name|
 				task = conf[:tasks][name]
 				usage("task '#{name}' not found") unless task
