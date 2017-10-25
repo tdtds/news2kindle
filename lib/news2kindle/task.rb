@@ -8,6 +8,17 @@ require 'kindlegen'
 require 'mail'
 require 'dropbox_api'
 
+class DropboxApi::Client
+	def chunk_upload(dropbox_file)
+		info = DropboxApi::Metadata::CommitInfo.new('path'=>dropbox_file, 'mode'=>:add)
+		cursor = upload_session_start('')
+		while data = yield
+			upload_session_append_v2(cursor, data)
+		end
+		upload_session_finish(cursor, info)
+	end
+end
+
 module News2Kindle
 	class Task
 		def initialize( name )
@@ -86,17 +97,11 @@ module News2Kindle
 					Pit::set('news2kindle', data: auth)
 				end
 				client = DropboxApi::Client.new(auth[:dropbox_token])
-	
 				to_address.each do |address|
 					to_path = address.sub(/^dropbox:/, '')
 					open(mobi) do |f|
 						file = Pathname(to_path) + "#{mobi.basename('.mobi').to_s}#{Time::now.to_i}.mobi"
-						info = DropboxApi::Metadata::CommitInfo.new('path'=>file, 'mode'=>:add)
-						cursor = client.upload_session_start('')
-						while data = f.read(10_000_000)
-							client.upload_session_append_v2(cursor, data)
-						end
-						client.upload_session_finish(cursor, info)
+						client.chunk_upload(file){f.read(10_000_000)}
 					end
 					News2Kindle.logger.info "saved to #{address} successfully."
 				end
