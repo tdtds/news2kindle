@@ -1,6 +1,4 @@
-# -*- coding: utf-8; -*-
-#
-# scraping nikkei.com (for paid user) for Kindlizer
+# scraping nikkei.com (for paid user) for News2Kindle
 #
 
 require 'mechanize'
@@ -9,7 +7,7 @@ require 'open-uri'
 require 'tmpdir'
 require 'pathname'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class NikkeiPaid
 			class IllegalPage < StandardError; end
@@ -59,7 +57,7 @@ module Kindlizer
 				%w(first second third fourth).each do |category|
 					(agent.page / "div.nx-top_news_#{category} h3 a").each do |a|
 						uri = a.attr('href')
-						next if Kindlizer::Backend::DupChecker.dup?(uri)
+						next if News2Kindle::DupChecker.dup?(uri)
 						toc_top << [canonical( a.text.strip ), uri]
 					end
 				end
@@ -75,7 +73,7 @@ module Kindlizer
 						toc_cat << cat.text
 						(genre / 'li a').each do |article|
 							uri = article.attr('href')
-							next if Kindlizer::Backend::DupChecker.dup?(uri)
+							next if News2Kindle::DupChecker.dup?(uri)
 							toc_cat << [canonical( article.text ), uri]
 						end
 					end
@@ -95,22 +93,12 @@ module Kindlizer
 		private
 
 			def auth
-				id = ENV['NIKKEI_ID']
-				pw = ENV['NIKKEI_PW']
-				if !id || !pw
-					begin
-						require 'pit'
-						login = Pit::get( 'nikkei', :require => {
-							'user' => 'your ID of Nikkei.',
-							'pass' => 'your Password of Nikkei.',
-						} )
-						id = login['user']
-						pw = login['pass']
-					rescue LoadError # no pit library, using environment variables
-						id, pw = nil, nil
-					end
-				end
-				return id, pw
+				require 'pit'
+				login = Pit::get('news2kindle', require: {
+					nikkei_user: 'your ID of Nikkei.',
+					nikkei_pass: 'your Password of Nikkei.',
+				})
+				return login[:nikkei_user], login[:nikkei_pass]
 			end
 
 			def basename
@@ -130,8 +118,8 @@ module Kindlizer
 					if count >= times
 						raise
 					else
-						$stderr.puts $!
-						$stderr.puts "#{count} retry."
+						News2Kindle.logger.error $!
+						News2Kindle.logger.info "#{count} retry."
 						retry
 					end
 				end
@@ -166,7 +154,7 @@ module Kindlizer
 							sleep 1
 						end
 					rescue
-						$stderr.puts "cannot get #{TOP}#{uri}."
+						News2Kindle.logger.error "cannot get #{TOP}#{uri}."
 						raise
 					end
 					open( "#{@src_dir}/#{aid}#{sub}.html", 'w:utf-8' ) do |f|
@@ -203,8 +191,8 @@ module Kindlizer
 									result << %Q|\t\t<p>[#{e.text}]</p>| unless e.text.strip.empty?
 									result << %Q|\t</div>|
 								rescue
-									p $!
-									$stderr.puts "FAIL TO DOWNLOAD IMAGE: #{image_url}"
+									News2Kindle.logger.debug $!
+									News2Kindle.logger.warn "FAIL TO DOWNLOAD IMAGE: #{image_url}"
 								end
 							end
 						end
@@ -233,8 +221,8 @@ module Kindlizer
 
 					%Q|\t\t<li><a href="#{aid}.html">#{item}</a></li>|
 				rescue NoMethodError
-					$stderr.puts "page parsing faild. #{aid}"
-					$stderr.puts $!
+					News2Kindle.logger.debug $!
+					News2Kindle.logger.error "page parsing faild. #{aid}"
 					File.delete out_file
 					raise IllegalPage.new
 				end

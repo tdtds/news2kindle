@@ -1,6 +1,12 @@
 ---
 :sender: hoge@example.com
-:tz: "+09:00"
+:email:
+  :address: smtp.sendgrid.net
+  :port: 587
+  :user_name: yes
+  :password: yes
+  :authentication: :plain
+:mongodb_uri: mongodb://localhost:27017/news2kindle
 :tasks:
   newspaper:
     :media:
@@ -20,13 +26,6 @@
     :media:
     - tdiary
     :option:
-      tdiary_top: http://sho.tdiary.net/
+      :tdiary_top: http://sho.tdiary.net/
     :receiver:
     - reader2@kindle.com
-:schedule:
-  4:
-  - newspaper
-  17:
-  - newspaper
-  - watch
-  - diary

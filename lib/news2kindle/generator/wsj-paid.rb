@@ -10,7 +10,7 @@ require 'tmpdir'
 require 'pathname'
 require 'json'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class WsjPaid
 			TOP = 'http://jp.wsj.com'
@@ -96,7 +96,7 @@ module Kindlizer
 							sleep 1
 						end
 					rescue
-						$stderr.puts "cannot get #{uri}."
+						News2Kindle.logger.error "cannot get #{uri}."
 						raise
 					end
 
@@ -134,8 +134,8 @@ module Kindlizer
 					if count >= times
 						raise
 					else
-						$stderr.puts $!
-						$stderr.puts "#{count} retry."
+						News2Kindle.logger.debug $!
+						News2Kindle.logger.info "#{count} retry."
 						retry
 					end
 				end
@@ -169,7 +169,7 @@ module Kindlizer
 							sleep 1
 						end
 					rescue
-						$stderr.puts "cannot get #{uri}."
+						News2Kindle.logger.error "cannot get #{uri}."
 						raise
 					end
 					open( "#{@src_dir}/#{aid}#{sub}.html", 'w:utf-8' ) do |f|
@@ -206,13 +206,12 @@ module Kindlizer
 						image_tag.set_attribute("src", image_file)
 						next
 					end
-					#puts "   getting image #{image_file}"
 					begin
 						image = open( image_url, &:read )
 						open( "#{@dst_dir}/#{image_file}", 'w' ){|fp| fp.write image}
 						image_tag.set_attribute("src", image_file)
 					rescue
-						$stderr.puts "FAIL TO DOWNLOAD IMAGE: #{image_url}"
+						News2Kindle.logger.warn "FAIL TO DOWNLOAD IMAGE: #{image_url}"
 					end
 				end
 

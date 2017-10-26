@@ -1,19 +1,6 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-ruby '~> 2.3.5'
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
-gem 'clockwork'
-gem 'kindlegen'
-gem 'systemu'
-gem 'mail'
-gem 'mechanize'
-gem 'nokogiri'
-gem 'dropbox-sdk'
-gem 'mongoid', '~> 6.1'
-
-group :development, :test do
-	gem 'pry'
-	gem 'rake'
-	gem 'rspec'
-	gem 'pit'
-end
+# Specify your gem's dependencies in news2kindle.gemspec
+gemspec

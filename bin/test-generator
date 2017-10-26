@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+require 'news2kindle'
+require 'kindlegen'
+require 'logger'
+
+News2Kindle::DupChecker.setup({
+	clients: {
+		default: {
+			uri: 'mongodb://localhost:27017/news2kindle'
+		}
+	}
+})
+
+ARGV.each do |task|
+	require "news2kindle/generator/#{task}"
+	gen = News2Kindle::Generator.const_get(task.split(/-/).map{|a|a.capitalize}.join)
+	Dir::mkdir(task)
+	gen.new(task).generate({now:Time::now}) do |opf|
+		Kindlegen.run(opf, '-o', "#{task}.mobi")
+	end
+end

@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+#
+# news2kindle: scraping news sites and generate kindle document
+#
+# Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
+# Distributed under GPL
+#
+
+require 'news2kindle'
+require 'optparse'
+require 'open-uri'
+require 'yaml'
+
+module News2Kindle
+
+	class CLI
+		def run
+			conf, tasks = parse_options
+			News2Kindle.logger.level = Logger::DEBUG if conf[:verbose]
+
+			if conf[:mongodb_uri]
+				unless conf[:mongodb_uri] =~ %r|^mongodb://|
+					conf[:mongodb_uri] = Pit::get('news2kindle', require: {
+						mongodb_uri: 'MongoDB URI for Dupulicate Check starts with "mongodb://".'
+					})[:mongodb_uri]
+				end
+				if conf[:mongodb_uri]
+					DupChecker.setup({clients:{default:{uri:conf[:mongodb_uri]}}})
+				end
+			end
+
+			tasks.each do |name|
+				task = conf[:tasks][name]
+				usage("task '#{name}' not found") unless task
+
+				task[:media].each do |media|
+					begin
+						opts = {now: Time.now}.merge(task[:option] || {})
+						News2Kindle.logger.info "starting #{media}..."
+						Task::new(media).run(task[:receiver], conf[:sender], opts)
+					rescue
+						News2Kindle.logger.fatal($!)
+						raise
+					end
+				end
+			end
+		end
+
+	private
+		def parse_options(argv = ARGV)
+			op = OptionParser.new
+
+			self.class.module_eval do
+				define_method(:usage) do |msg = nil|
+					puts op.to_s
+					puts "error: #{msg}" if msg
+					exit 1
+				end
+			end
+
+			opts = {
+				verbose: false
+			}
+
+			op.on('-C', '--config VALUE', "configuration file") do |v|
+				usage("#{v} is not existent") unless Pathname(v).expand_path.exist?
+				opts[:config] = v
+			end
+			op.on('-s', '--sender VALUE', "sender e-mail address") do |v|
+				opts[:sender] = v
+			end
+			op.on('-m', '--mongodb-uri VALUE', "MongoDB URI for dupulicate check or 'no'") do |v|
+				opts[:mongodb_uri] = v == 'no' ? false : v
+			end
+			op.on('-V', '--verbose', "print verbose messages") do |v|
+				opts[:verbose] = true
+			end
+
+			op.banner += ' TASK1 [TASK2...]'
+			begin
+				args = op.parse(argv)
+			rescue OptionParser::InvalidOption => e
+				usage e.message
+			end
+
+			conf = nil
+			[opts[:config], './news2kindle.yaml', '~/.news2kindle'].each do |config_file|
+				begin
+					file = Pathname(config_file).expand_path
+					conf = YAML.load_file(file)
+					opts[:config] = file
+					break
+				rescue TypeError, Errno::ENOENT
+				end
+			end
+			usage 'needs configuration file ./news2kindle.yaml or ~/.news2kindle' unless conf
+			conf.merge!(opts)
+
+			if args.size < 1
+				usage "needs some tasks: #{conf[:tasks].keys.join(', ')}"
+			end
+			[conf, args]
+		end
+	end
+end
+
+News2Kindle::CLI.new.run

@@ -1,6 +1,4 @@
-# -*- coding: utf-8; -*-
-#
-# scraping nikkei.com (for free user) for Kindlizer
+# scraping nikkei.com (for free user) for News2Kindle
 #
 
 require 'nokogiri'
@@ -9,7 +7,7 @@ require 'tmpdir'
 require 'pathname'
 require  (File.dirname(__FILE__) + '/nikkei-paid')
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class NikkeiFree < NikkeiPaid
 			def auth

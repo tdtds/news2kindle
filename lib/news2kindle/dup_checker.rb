@@ -1,15 +1,11 @@
-# -*- coding: utf-8; -*-
-#
 # uri duplication checker
 #
-# Copyright (C) 2014 by TADA Tadashi <t@tdtds.jp>
+# Copyright (C) 2017 by TADA Tadashi <t@tdtds.jp>
 # Distributed under GPL.
 #
 require 'mongoid'
 
-module Kindlizer; end
-
-module Kindlizer::Backend
+module News2Kindle
 	class DupChecker
 		Mongo::Logger.level = Logger::WARN
 		@@mongoid_conf = nil
@@ -36,7 +32,7 @@ module Kindlizer::Backend
 					return true
 				end
 			rescue Moped::Errors::ConnectionFailure
-				$logger.error $!.message
+				News2Kindle.logger.error $!
 				@@mongoid_conf = nil
 				return false
 			end

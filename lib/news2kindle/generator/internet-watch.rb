@@ -1,6 +1,4 @@
-# -*- coding: utf-8; -*-
-#
-# scraping internet.watch.impress.co.jp for Kindlizer
+# scraping internet.watch.impress.co.jp for News2Kindle
 #
 
 require 'nokogiri'
@@ -11,10 +9,10 @@ require 'tmpdir'
 require 'pathname'
 require 'fileutils'
 
-module Kindlizer
+module News2Kindle
 	module Generator
 		class InternetWatch
-			TOP = 'http://internet.watch.impress.co.jp'
+			TOP = 'https://internet.watch.impress.co.jp'
 			
 			def initialize( tmpdir )
 				@current_dir = tmpdir
@@ -32,15 +30,15 @@ module Kindlizer
 				now = opts[:now]
 				items = []
 				
-				rdf_file = "#{TOP}/cda/rss/internet.rdf"
+				rdf_file = "http://rss.rssad.jp/rss/internetwatch/internet.rdf"
 				rdf = retry_loop( 5 ) do
-					Nokogiri( open( rdf_file, 'r:utf-8', &:read ) )
+					Nokogiri(open(rdf_file, 'r:utf-8', &:read))
 				end
 				(rdf / 'item' ).each do |item|
 					uri = URI( item.attr( 'rdf:about' ).to_s )
 					next unless /internet\.watch\.impress\.co\.jp/ =~ uri.host
 					uri.query = nil # remove query of 'ref=rss'
-					next if Kindlizer::Backend::DupChecker.dup?(uri)
+					next if News2Kindle::DupChecker.dup?(uri)
 				
 					title = (item / 'title').text
 					date = item.elements.map{|e| e.text if e.name == 'date'}.join
@@ -70,15 +68,15 @@ module Kindlizer
 									open( "#{@dst_dir}/#{cache}", 'w' ){|f| f.write img_file}
 									img.set_attribute( 'src', cache )
 								rescue OpenURI::HTTPError
-									$stderr.puts "skipped an image: #{TOP}#{org}"
+									News2Kindle.logger.error "skipped an image: #{TOP}#{org}"
 								end
 							end
 							f.puts contents.inner_html
 							f.puts html_footer
 						end
 					rescue
-						$stderr.puts "#{$!.class}: #$!"
-						$stderr.puts "skipped an article: #{item.uri}"
+						News2Kindle.logger.warn "#{$!.class}: #$!"
+						News2Kindle.logger.warn "skipped an article: #{item.uri}"
 					end
 				end
 				
@@ -187,8 +185,8 @@ module Kindlizer
 					if count >= times
 						raise
 					else
-						$stderr.puts $!
-						$stderr.puts "#{count} retry."
+						News2Kindle.logger.error $!
+						News2Kindle.logger.info "#{count} retry."
 						sleep 1
 						retry
 					end
