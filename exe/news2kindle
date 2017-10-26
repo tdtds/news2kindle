@@ -69,6 +69,9 @@ module News2Kindle
 			op.on('-s', '--sender VALUE', "sender e-mail address") do |v|
 				opts[:sender] = v
 			end
+			op.on('-m', '--mongodb-uri VALUE', "MongoDB URI for dupulicate check or 'no'") do |v|
+				opts[:mongodb_uri] = v == 'no' ? false : v
+			end
 			op.on('-V', '--verbose', "print verbose messages") do |v|
 				opts[:verbose] = true
 			end
