@@ -5,7 +5,6 @@
 #
 require 'pit'
 require 'kindlegen'
-require 'mail'
 require 'dropbox_api'
 
 class DropboxApi::Client
@@ -53,16 +52,6 @@ module News2Kindle
 		def deliver_via_mail(to_address, from_address, mobi, opts)
 			return if to_address.empty?
 
-			settings = opts[:email]
-			if settings[:user_name] or settings[:password]
-				account = Pit::get('news2kindle', require: {
-					mail_user_name: 'your e-mail id',
-					mail_password: 'your e-mail password'
-				})
-				settings[:user_name] = account[:mail_user_name]
-				settings[:password] = account[:mail_password]
-			end
-			Mail.defaults{delivery_method :smtp, settings}
 			Mail.deliver do
 				from from_address
 				to  to_address

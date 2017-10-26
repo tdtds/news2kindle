@@ -10,24 +10,15 @@ require 'news2kindle'
 require 'optparse'
 require 'open-uri'
 require 'yaml'
+require 'mail'
 
 module News2Kindle
-
 	class CLI
 		def run
 			conf, tasks = parse_options
 			News2Kindle.logger.level = Logger::DEBUG if conf[:verbose]
-
-			if conf[:mongodb_uri]
-				unless conf[:mongodb_uri] =~ %r|^mongodb://|
-					conf[:mongodb_uri] = Pit::get('news2kindle', require: {
-						mongodb_uri: 'MongoDB URI for Dupulicate Check starts with "mongodb://".'
-					})[:mongodb_uri]
-				end
-				if conf[:mongodb_uri]
-					DupChecker.setup({clients:{default:{uri:conf[:mongodb_uri]}}})
-				end
-			end
+			setup_mail(conf)
+			setup_dupcheck(conf)
 
 			tasks.each do |name|
 				task = conf[:tasks][name]
@@ -100,6 +91,32 @@ module News2Kindle
 				usage "needs some tasks: #{conf[:tasks].keys.join(', ')}"
 			end
 			[conf, args]
+		end
+
+		def setup_mail(conf)
+			settings = conf[:email]
+			if settings[:user_name] or settings[:password]
+				account = Pit::get('news2kindle', require: {
+					mail_user_name: 'your e-mail id',
+					mail_password: 'your e-mail password'
+				})
+				settings[:user_name] = account[:mail_user_name]
+				settings[:password] = account[:mail_password]
+			end
+			Mail.defaults{delivery_method :smtp, settings}
+		end
+
+		def setup_dupcheck(conf)
+			if conf[:mongodb_uri]
+				unless conf[:mongodb_uri] =~ %r|^mongodb://|
+					conf[:mongodb_uri] = Pit::get('news2kindle', require: {
+						mongodb_uri: 'MongoDB URI for Dupulicate Check starts with "mongodb://".'
+					})[:mongodb_uri]
+				end
+				if conf[:mongodb_uri]
+					DupChecker.setup({clients:{default:{uri:conf[:mongodb_uri]}}})
+				end
+			end
 		end
 	end
 end
