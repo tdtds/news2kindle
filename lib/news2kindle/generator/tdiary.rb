@@ -10,7 +10,8 @@ module News2Kindle
 		class Tdiary
 			def initialize( tmpdir )
 				@current_dir = tmpdir
-				FileUtils.cp( "./resource/tdiary.css", @current_dir )
+				resource = Pathname(__FILE__) + '../../../../resource'
+				FileUtils.cp(resource + "tdiary.css", @current_dir)
 			end
 
 			def generate(opts)
