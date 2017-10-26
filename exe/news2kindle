@@ -19,7 +19,14 @@ module News2Kindle
 			News2Kindle.logger.level = Logger::DEBUG if conf[:verbose]
 
 			if conf[:mongodb_uri]
-				DupChecker.setup({clients:{default:{uri:conf[:mongodb_uri]}}})
+				unless conf[:mongodb_uri] =~ %r|^mongodb://|
+					conf[:mongodb_uri] = Pit::get('news2kindle', require: {
+						mongodb_uri: 'MongoDB URI for Dupulicate Check starts with "mongodb://".'
+					})[:mongodb_uri]
+				end
+				if conf[:mongodb_uri]
+					DupChecker.setup({clients:{default:{uri:conf[:mongodb_uri]}}})
+				end
 			end
 
 			tasks.each do |name|
