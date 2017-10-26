@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    news2kindle (0.1.0)
+    news2kindle (0.1.1)
       dropbox_api
       kindlegen
       mail
@@ -116,4 +116,4 @@ DEPENDENCIES
   rspec
 
 BUNDLED WITH
-   1.16.0.pre.2
+   1.16.0.pre.3
