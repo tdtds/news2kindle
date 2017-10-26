@@ -85,7 +85,7 @@ module News2Kindle
 			end
 
 			if args.size < 1
-				usage 'needs some tasks'
+				usage "needs some tasks: #{conf[:tasks].keys.join(', ')}"
 			end
 			[conf, args]
 		end
