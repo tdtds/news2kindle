@@ -73,16 +73,18 @@ module News2Kindle
 				usage e.message
 			end
 
-			begin
-				config_files = [opts[:config], './news2kindle.yaml', '~/.news2kindle']
-				conf = YAML::load_file(config_files.find {|c|
-					Pathname(c).expand_path.exist? rescue false
-				}).merge(opts)
-			rescue TypeError
-				usage 'needs configuration file ./news2kindle.yaml or ~/.news2kindle'
-			rescue 
-				usage "unable read configuration file (#{config_file})"
+			conf = nil
+			[opts[:config], './news2kindle.yaml', '~/.news2kindle'].each do |config_file|
+				begin
+					file = Pathname(config_file).expand_path
+					conf = YAML.load_file(file)
+					opts[:config] = file
+					break
+				rescue TypeError, Errno::ENOENT
+				end
 			end
+			usage 'needs configuration file ./news2kindle.yaml or ~/.news2kindle' unless conf
+			conf.merge!(opts)
 
 			if args.size < 1
 				usage "needs some tasks: #{conf[:tasks].keys.join(', ')}"
