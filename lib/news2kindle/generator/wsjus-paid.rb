@@ -16,7 +16,8 @@ module Kindlizer
 				@now_str = now.strftime '%Y-%m-%d %H:%M'
 				@title = "WSJ U.S."
 				@lang = "en-US"
-				FileUtils.cp( "./resource/wsj-us.jpg", @dst_dir + "/wsj.jpg")
+				resource = Pathname(__FILE__) + '../../../../resource'
+				FileUtils.cp(rescue + "wsj-us.jpg", @dst_dir + "/wsj.jpg")
 
 				agent = Mechanize::new
 				agent.set_proxy( *ENV['HTTP_PROXY'].split( /:/ ) ) if ENV['HTTP_PROXY']

@@ -22,8 +22,9 @@ module News2Kindle
 
 				@dst_dir = @current_dir + '/dst'
 				Dir::mkdir( @dst_dir )
-				FileUtils.cp( "./resource/internet-watch.jpg", @dst_dir )
-				FileUtils.cp( "./resource/internet-watch.css", @dst_dir )
+				resource = Pathname(__FILE__) + '../../../../resource'
+				FileUtils.cp(resource + "internet-watch.jpg", @dst_dir)
+				FileUtils.cp(resource + "internet-watch.css", @dst_dir)
 			end
 
 			def generate(opts)
