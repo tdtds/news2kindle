@@ -222,8 +222,8 @@ module News2Kindle
 
 					%Q|\t\t<li><a href="#{aid}.html">#{item}</a></li>|
 				rescue NoMethodError
+					News2Kindle.logger.warning "cannot parse page #{aid}, skipped."
 					News2Kindle.logger.debug $!
-					News2Kindle.logger.error "page parsing faild. #{aid}"
 					File.delete out_file
 					raise IllegalPage.new
 				end
