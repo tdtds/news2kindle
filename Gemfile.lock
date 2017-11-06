@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    news2kindle (0.1.4)
+    news2kindle (0.1.5)
       dropbox_api
       kindlegen
       mail
@@ -34,7 +34,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (0.9.0)
+    i18n (0.9.1)
       concurrent-ruby (~> 1.0)
     jwt (1.5.6)
     kindlegen (3.0.3)
