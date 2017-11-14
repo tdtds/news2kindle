@@ -31,7 +31,7 @@ module News2Kindle
 				else
 					return true
 				end
-			rescue Moped::Errors::ConnectionFailure
+			rescue
 				News2Kindle.logger.error $!
 				@@mongoid_conf = nil
 				return false
