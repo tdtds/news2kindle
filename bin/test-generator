@@ -12,6 +12,7 @@ News2Kindle::DupChecker.setup({
 })
 
 ARGV.each do |task|
+	News2Kindle.logger.level = Logger::DEBUG
 	require "news2kindle/generator/#{task}"
 	gen = News2Kindle::Generator.const_get(task.split(/-/).map{|a|a.capitalize}.join)
 	Dir::mkdir(task)
