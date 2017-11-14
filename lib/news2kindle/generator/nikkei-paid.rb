@@ -55,28 +55,25 @@ module News2Kindle
 				# scraping top news
 				#
 				toc_top = ['TOP NEWS']
-				%w(first second third fourth).each do |category|
-					(agent.page / "div.nx-top_news_#{category} h3 a").each do |a|
-						uri = a.attr('href')
-						next if News2Kindle::DupChecker.dup?(uri)
-						toc_top << [canonical( a.text.strip ), uri]
-					end
+				(agent.page / '#JSID_baseRefreshNxTop2 h3 a').each do |a|
+					uri = a.attr('href')
+					next if News2Kindle::DupChecker.dup?(uri)
+					toc_top << [canonical(a.text.strip), uri]
 				end
 				toc << toc_top
 
 				#
 				# scraping all categories
 				#
-				(agent.page / 'div.cmnc-genre').each do |genre|
-					toc_cat = []
-					(genre / 'h4.cmnc-genre_title a.cmnc-title_text').each do |cat|
-						next if /local/ =~ cat.attr( 'href' )
-						toc_cat << cat.text
-						(genre / 'li a').each do |article|
-							uri = article.attr('href')
-							next if News2Kindle::DupChecker.dup?(uri)
-							toc_cat << [canonical( article.text ), uri]
-						end
+				(agent.page / 'div.m-miM11_box').each do |genre|
+					headline = genre / 'div.m-headline h3'
+					toc_cat = [headline.text]
+					agent.get((headline / 'a').attr('href'))
+					(agent.page / '#CONTENTS_MAIN h3 a').each do |article|
+						uri = article.attr('href')
+						next unless article.attr('href') =~ %r|^/article/|
+						next if News2Kindle::DupChecker.dup?(uri)
+						toc_cat << [canonical(article.text), uri]
 					end
 					toc << toc_cat
 				end
@@ -150,7 +147,7 @@ module News2Kindle
 					begin
 						#puts "getting html #{aid}#{sub}"
 						retry_loop( 5 ) do
-							agent.get( "#{TOP}#{uri}" )
+							agent.get("#{TOP}/news/print-article/?ng=#{aid}")
 							html = agent.page.root
 							sleep 1
 						end
