@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'nokogiri'
   spec.add_dependency 'pit'
   spec.add_dependency 'dropbox_api'
-  spec.add_dependency 'mongoid', '~> 6.1'
+  spec.add_dependency 'mongoid', '>= 6.1', '< 8.0'
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
