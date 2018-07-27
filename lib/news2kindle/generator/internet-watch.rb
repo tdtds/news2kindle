@@ -31,7 +31,7 @@ module News2Kindle
 				now = opts[:now]
 				items = []
 				
-				rdf_file = "http://rss.rssad.jp/rss/internetwatch/internet.rdf"
+				rdf_file = "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf"
 				rdf = retry_loop( 5 ) do
 					Nokogiri(open(rdf_file, 'r:utf-8', &:read))
 				end
