@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    news2kindle (0.2.0)
+    news2kindle (0.2.1)
       dropbox_api
       kindlegen
       mail
