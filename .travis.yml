@@ -5,8 +5,9 @@ before_install:
   - gem install bundler -v 1.16.2
 
 rvm:
-  - 2.4.4
-  - 2.5.1
+  - 2.4.5
+  - 2.5.4
+  - 2.6.3
 
 script: bundle exec rake
 
