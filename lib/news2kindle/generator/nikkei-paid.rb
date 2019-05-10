@@ -13,7 +13,6 @@ module News2Kindle
 			class IllegalPage < StandardError; end
 
 			TOP = 'https://www.nikkei.com'
-			LOGIN = "#{TOP}/etc/accounts/login?dps=3&amp;pageflag=top&amp;url=http%3A%2F%2Fwww.nikkei.com%2F"
 
 			def initialize( tmpdir )
 				@nikkei_id, @nikkei_pw = auth
@@ -34,28 +33,28 @@ module News2Kindle
 				@now_str = @now.strftime '%Y-%m-%d %H:%M'
 
 				agent = Mechanize::new
+				agent.user_agent_alias = "Windows Chrome"
 				agent.set_proxy( *ENV['HTTP_PROXY'].split( /:/ ) ) if ENV['HTTP_PROXY']
 
 				toc = []
 				if @nikkei_id and @nikkei_pw
-					agent.get('https://regist.nikkei.com/ds/etc/accounts/logout')
-					agent.get( LOGIN )
-					agent.page.form_with( :name => 'autoPostForm' ).submit
-					agent.page.form_with( :name => 'LA7010Form01' ) do |form|
-						form['LA7010Form01:LA7010Email'] = @nikkei_id
-						form['LA7010Form01:LA7010Password'] = @nikkei_pw
+					agent.get('https://id.nikkei.com/lounge/li/main/')
+					agent.page.form_with(name: 'LA0120Form01') do |form|
+						form['LA0120Form01:LA0120Email'] = @nikkei_id
+						form['LA0120Form01:LA0120Password'] = @nikkei_pw
 						form.click_button
 					end
-					agent.page.forms.first.submit
+					agent.get(TOP)
+					agent.page.form_with(name: 'autoPostForm').click_button
 				else
-					agent.get( TOP )
+					agent.get(TOP)
 				end
 
 				#
 				# scraping top news
 				#
 				toc_top = ['TOP NEWS']
-				(agent.page / '#JSID_baseRefreshNxTop2 h3 a').each do |a|
+				(agent.page / 'div.m-miM11_box h3 a').each do |a|
 					uri = a.attr('href')
 					next if News2Kindle::DupChecker.dup?(uri)
 					toc_top << [canonical(a.text.strip), uri]
