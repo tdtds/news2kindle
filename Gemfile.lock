@@ -14,13 +14,14 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (5.2.3)
-      activesupport (= 5.2.3)
-    activesupport (5.2.3)
+    activemodel (6.0.0)
+      activesupport (= 6.0.0)
+    activesupport (6.0.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+      zeitwerk (~> 2.1, >= 2.1.8)
     bson (4.5.0)
     coderay (1.1.2)
     concurrent-ruby (1.1.5)
@@ -59,10 +60,10 @@ GEM
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
-    mongo (2.8.0)
+    mongo (2.10.1)
       bson (>= 4.4.2, < 5.0.0)
-    mongoid (7.0.4)
-      activemodel (>= 5.1, < 6.0.0)
+    mongoid (7.0.5)
+      activemodel (>= 5.1, < 6.1)
       mongo (>= 2.5.1, < 3.0.0)
     multi_json (1.13.1)
     multi_xml (0.6.0)
@@ -107,6 +108,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.6)
     webrobots (0.1.2)
+    zeitwerk (2.1.10)
 
 PLATFORMS
   ruby
