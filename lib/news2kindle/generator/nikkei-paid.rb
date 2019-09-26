@@ -44,8 +44,11 @@ module News2Kindle
 						form['LA0120Form01:LA0120Password'] = @nikkei_pw
 						form.click_button
 					end
-					agent.get(TOP)
-					agent.page.form_with(name: 'autoPostForm').click_button
+					begin # skip the confirmation page if exist
+						agent.get(TOP)
+						agent.page.form_with(name: 'autoPostForm').click_button
+					rescue NoMethodError
+					end
 				else
 					agent.get(TOP)
 				end
