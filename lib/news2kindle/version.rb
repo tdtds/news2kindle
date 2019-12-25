@@ -1,3 +1,3 @@
 module News2Kindle
-  VERSION = "0.2.3"
+  VERSION = "0.2.4"
 end
