@@ -33,7 +33,7 @@ module News2Kindle
 				
 				rdf_file = "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf"
 				rdf = retry_loop( 5 ) do
-					Nokogiri(open(rdf_file, 'r:utf-8', &:read))
+					Nokogiri(URI.open(rdf_file, 'r:utf-8', &:read))
 				end
 				(rdf / 'item' ).each do |item|
 					uri = URI( item.attr( 'rdf:about' ).to_s )
@@ -63,7 +63,7 @@ module News2Kindle
 								next if org =~ /^http/ # skip images on other servers
 								begin
 									img_file = retry_loop( 5 ) do
-										open( "#{TOP}#{org}", &:read )
+										URI.open( "#{TOP}#{org}", &:read )
 									end
 									cache = "#{org.gsub( /\//, '_' ).sub( /^_/, '' )}"
 									open( "#{@dst_dir}/#{cache}", 'w' ){|f| f.write img_file}
@@ -205,7 +205,7 @@ module News2Kindle
 				rescue Errno::ENOENT
 					#puts "getting article: #{uri.path}".encode( Encoding::default_external )
 					html = retry_loop( 5 ) do
-						open( uri, &:read )
+						URI.open( uri, &:read )
 					end
 					open( cache, 'w' ){|f| f.write html }
 				end

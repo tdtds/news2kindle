@@ -21,7 +21,7 @@ module News2Kindle
 				html = title = author = now_str = nil
 				begin
 					retry_loop( 5 ) do
-						html = Nokogiri(open("#{@top}?date=#{now.strftime '%m%d'}", 'r:utf-8', &:read))
+						html = Nokogiri(URI.open("#{@top}?date=#{now.strftime '%m%d'}", 'r:utf-8', &:read))
 						title = (html / 'head title').text
 						author = (html / 'head meta[name="author"]')[0]['content']
 						now_str = now.strftime( '%m-%d' )
@@ -124,7 +124,7 @@ module News2Kindle
 				file_name = "#{SecureRandom.hex}#{uri.to_s.scan(/\.[^\.]+$/)[0]}"
 				begin
 					open("#{@current_dir}/#{file_name}", 'w') do |f|
-						f.write open(uri, &:read)
+						f.write URI.open(uri, &:read)
 					end
 				rescue OpenURI::HTTPError, RuntimeError, Errno::ENOENT
 					News2Kindle.logger.warn "#$!: #{uri}"
