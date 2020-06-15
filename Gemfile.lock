@@ -79,7 +79,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     pit (0.0.7)
-    rack (2.2.2)
+    rack (2.2.3)
     rake (13.0.1)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
